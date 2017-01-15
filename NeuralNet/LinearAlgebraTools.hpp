@@ -11,6 +11,14 @@
 
 #include <stdio.h>
 #include <vector>
+
+// this is a debug flag
+#define DBG
+
+#ifdef DBG
+#include <assert.h>
+#endif
+
 /* Matrix class
  *
  * This is a basic resizable matrix class that will come in handy in Neural Networks
@@ -80,23 +88,28 @@ public:
     
     // element
     valType& operator()(size_t i, size_t j){
+#ifdef DBG
+        assert(i < rows && j < columns);
+#endif
         return data[i*columns + j];
     }
     
     valType operator()(size_t i, size_t j) const{
+#ifdef DBG
+        assert(i < rows && j < columns);
+#endif
         return data[i*columns + j];
     }
     
     valType getMultVal( const Matrix<valType>& rhs, size_t i, size_t j){
-        if( rhs.getCols() != getRows() )
-            return valType(false);
-        else{
-            valType sum(0);
-            for( size_t ind = 0; ind < rows; ind++){
-                sum += operator()(i,ind) * rhs(ind,j);
-            }
-            return sum;
+#ifdef DBG
+        assert(getCols() == rhs.getRows() && i < getCols() && j < rhs.getRows());
+#endif
+        valType sum(0);
+        for( size_t ind = 0; ind < rows; ind++){
+            sum += operator()(i,ind) * rhs(ind,j);
         }
+        return sum;
     }
     
     /*-------------------------------------------
@@ -155,7 +168,7 @@ public:
     // constant multiplication
     template<typename T>
     Matrix<valType> operator*(const T& mult){
-        Matrix<valType> copy(getRows(), getCols());
+        Matrix<valType> copy(*this);
         copy *= mult;
         return copy;
     }
@@ -163,7 +176,7 @@ public:
     // constant division
     template<typename T>
     Matrix<valType> operator/(const T& val){
-        Matrix<valType> copy(getRows(), getCols());
+        Matrix<valType> copy(*this);
         copy /= val;
         return copy;
     }
@@ -171,7 +184,7 @@ public:
     // constant addition
     template<typename T>
     Matrix<valType> operator+(const T& val){
-        Matrix<valType> copy(getRows(), getCols());
+        Matrix<valType> copy(*this);
         copy += val;
         return copy;
     }
@@ -179,19 +192,78 @@ public:
     // constant subtraction
     template<typename T>
     Matrix<valType> operator-(const T& val){
-        Matrix<valType> copy(getRows(), getCols());
+        Matrix<valType> copy(*this);
         copy -= val;
         return copy;
     }
     
     
     /* ------------------------------------------
-     * Matrix Operations
+     * Matrix Assignment Operators
      *
      */
     
-    // matrix multiplication
-    Matrix<valType> operator*(Matrix<valType>& rhs){
+    // basic matrix addition assigment operator
+    Matrix<valType>& operator+=(const Matrix<valType>& rhs){
+#ifdef DBG
+        assert(getRows() == rhs.getRows() && getCols() == rhs.getCols());
+#endif
+        for( size_t i=0; i < getRows(); i++){
+            for(size_t j = 0; j < getCols(); j++){
+                operator()(i,j) += rhs(i,j);
+            }
+        }
+        return *this;
+    }
+    
+    // basic matrix subtraction assigment operator
+    Matrix<valType>& operator-=(const Matrix<valType>& rhs){
+#ifdef DBG
+        assert(getRows() == rhs.getRows() && getCols() == rhs.getCols());
+#endif
+        for( size_t i=0; i < getRows(); i++){
+            for(size_t j = 0; j < getCols(); j++){
+                operator()(i,j) -= rhs(i,j);
+            }
+        }
+        return *this;
+    }
+
+    /* ------------------------------------------
+     * Matrix Operators that produce a new matrix of the same size
+     *
+     */
+    
+    // basic matrix addition
+    Matrix<valType> operator+(const Matrix<valType>& rhs){
+#ifdef DBG
+        assert(getRows() == rhs.getRows() && getCols() == rhs.getCols());
+#endif
+        Matrix<valType> copy(*this);
+        copy += rhs;
+        return copy;
+    }
+    
+    // basic matrix subtraction
+    Matrix<valType> operator-(const Matrix<valType>& rhs){
+#ifdef DBG
+        assert(getRows() == rhs.getRows() && getCols() == rhs.getCols());
+#endif
+        Matrix<valType> copy(*this);
+        copy -= rhs;
+        return copy;
+    }
+    
+    
+    /* Matrix Multiplication types
+     *
+     *
+     */
+    // standard matrix multiplication
+    Matrix<valType> operator*( const Matrix<valType>& rhs){
+#ifdef DBG
+        assert(getCols() == rhs.getRows());
+#endif
         Matrix<valType> new_matrix(getCols(), rhs.getRows());
         for( size_t i = 0; i < getCols(); i++){
             for( size_t j = 0; j < rhs.getRows(); j++){
@@ -203,7 +275,10 @@ public:
     
     // Hadamard multiplication
     /// Note: This requires matrices with the same coordinates
-    Matrix<valType> hadmardMult( Matrix<valType>& rhs){
+    Matrix<valType> hadmardMult( const Matrix<valType>& rhs){
+#ifdef DBG
+        assert(getRows() == rhs.getRows() && getCols() == rhs.getCols());
+#endif
         Matrix<valType> new_matrix(getRows(), getCols());
         for( size_t i = 0; i < getCols(); i++){
             for( size_t j =  0; j < getRows(); j++){
@@ -214,16 +289,20 @@ public:
     }
     
     // Kroneker Multiplication
-    Matrix<valType> kroneckerMult( Matrix<valType>& rhs ){
+    /// Can be used on any matrices
+    Matrix<valType> kroneckerMult( const Matrix<valType>& rhs ){
         Matrix<valType> kroneckerProduct( getRows()*rhs.getRows(), getCols()*rhs.getCols());
-        for( size_t i = 0; i < getCols(); i++){
-            for( size_t i2 = 0; i2< rhs.getCols(); i2++){
-                for( size_t j = 0; j < getRows(); j++){
-                    for( size_t j2 = 0; j2 < rhs.getCols(); j2++){
+        for( size_t j = 0; j < getRows(); j++){
+            for( size_t j2 = 0; j2< rhs.getRows(); j2++){
+                for( size_t i = 0; i < getCols(); i++){
+                    valType v1(operator()(i,j));
+                    for( size_t i2 = 0; i2 < rhs.getCols(); i2++){
+                        kroneckerProduct(i*rhs.getCols() + i2, j*rhs.getRows() + j2) = v1 * rhs(i2,j2);
                     }
                 }
             }
         }
+        return kroneckerProduct;
     }
     
     
