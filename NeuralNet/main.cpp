@@ -12,10 +12,51 @@
 int main(int argc, const char * argv[]) {
     // insert code here...
     
-    Matrix<double> m(3,3);
-    m.fill(2.0);
+    Matrix<double> m2(3,3);
+    m2.fill(2.0);
+    std::cout<<"m2"<<std::endl;
+    m2.operator<<(std::cout);
     
-    m.operator<<(std::cout);
+    Matrix<double> mI(3,3);
+    mI.fill(0.0);
+    mI(0,0) = 1.0;
+    mI(1,1) = 1.0;
+    mI(2,2) = 2.0;
+    std::cout<<"mI"<<std::endl;
+    mI.operator<<(std::cout);
+    
+
+    std::cout<<"Normal Mult"<<std::endl;
+    Matrix<double> m3 = m2 * mI;
+    m3.operator<<(std::cout);
+    
+
+    std::cout<<"Hadmard Mult"<<std::endl;
+    m3 = m2.hadmardMult(mI);
+    m3.operator<<(std::cout);
+    
+    std::cout<<"Kronker Mult"<<std::endl;
+    m3 = m2.kroneckerMult(mI);
+    m3.operator<<(std::cout);
+
+    
+    std::cout<<"HorzCat"<<std::endl;
+    m3 = m2.horzcat(mI);
+    m3.operator<<(std::cout);
+    
+    std::cout<<"vertCat"<<std::endl;
+    m3 = m2.vertcat(mI);
+    m3.operator<<(std::cout);
+    
+    std::cout<<"Add"<<std::endl;
+    m3 = m2 + mI;
+    m3.operator<<(std::cout);
+    
+    std::cout<<"Sub"<<std::endl;
+    m3 = m2 - mI;
+    m3.operator<<(std::cout);
+
+
     
     return 0;
 }

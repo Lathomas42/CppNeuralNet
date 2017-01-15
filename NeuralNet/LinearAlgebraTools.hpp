@@ -75,11 +75,11 @@ public:
         data.resize(nRows*nCol);
     }
     
-    size_t getRows(){
+    size_t getRows() const{
         return rows;
     }
     
-    size_t getCols(){
+    size_t getCols() const{
         return columns;
     }
     
@@ -263,7 +263,7 @@ public:
     // standard matrix multiplication
     Matrix<valType> operator*( const Matrix<valType>& rhs){
 #ifdef DBG
-        assert(getCols() == rhs.getRows());
+        assert(rhs.getRows() == getCols());
 #endif
         Matrix<valType> new_matrix(getCols(), rhs.getRows());
         for( size_t i = 0; i < getCols(); i++){
