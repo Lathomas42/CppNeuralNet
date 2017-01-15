@@ -11,7 +11,8 @@
 
 #include <stdio.h>
 #include <vector>
-
+#include <iostream>
+#include <algorithm>
 // this is a debug flag
 #define DBG
 
@@ -83,7 +84,7 @@ public:
     }
     
     void fill( valType val ){
-        data.fill(val);
+        std::fill(data.begin(),data.end(),val);
     }
     
     // element
@@ -290,6 +291,7 @@ public:
     
     // Kroneker Multiplication
     /// Can be used on any matrices
+    /// TODO: this can be optimized with block size and changing the order of the interior loops
     Matrix<valType> kroneckerMult( const Matrix<valType>& rhs ){
         Matrix<valType> kroneckerProduct( getRows()*rhs.getRows(), getCols()*rhs.getCols());
         for( size_t j = 0; j < getRows(); j++){
@@ -317,6 +319,59 @@ public:
         return new_matrix;
     }
     
+    /* Matrix Concatenation
+     * 0 1  .horzcat( 1 0 ) = 0 1 1 0
+     * 0 1            0 1     0 1 0 1
+     */
+    Matrix<valType> horzcat( const Matrix<valType>& rhs){
+#ifdef DBG
+        assert(getRows() == rhs.getRows());
+#endif
+        Matrix<valType> new_matrix(getRows(), getCols()+rhs.getCols());
+        for(int i = 0; i < getRows(); i++){
+            for( int j = 0; j < getCols(); j++){
+                new_matrix(i,j) = operator()(i,j);
+            }
+            for( int j = 0; j < rhs.getCols(); j++){
+                new_matrix( i , j + getCols()) = rhs(i,j);
+            }
+        }
+        return new_matrix;
+    }
+    
+    /* vertical concat
+     * 0 1  .vertcat( 1 0 ) = 0 1
+     * 0 1            0 1     0 1
+     *                        1 0 
+     *                        0 1
+     */
+    
+    Matrix<valType> vertcat( const Matrix<valType>& rhs){
+#ifdef DBG
+        assert(getCols() == rhs.getCols());
+#endif
+        Matrix<valType> new_matrix(getRows() + rhs.getRows(), getCols());
+        for(int j = 0; j < getCols(); j++){
+            for( int i = 0; i < getRows(); i++){
+                new_matrix(i,j) = operator()(i,j);
+            }
+            for( int i = 0; i < rhs.getRows(); i++){
+                new_matrix( i + getRows(), j) = rhs(i,j);
+            }
+        }
+        return new_matrix;
+    }
+    
+    // print operator
+    std::ostream& operator<< (std::ostream & out) {
+        for( int i = 0; i < rows; i++){
+            for( int j = 0; j < columns; j++){
+                out<<operator()(i,j);
+            }
+            out<<std::endl;
+        }
+        return out;
+    }
 private:
     size_t rows, columns;
     std::vector<valType> data;

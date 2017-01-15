@@ -7,9 +7,15 @@
 //
 
 #include <iostream>
+#include "LinearAlgebraTools.hpp"
 
 int main(int argc, const char * argv[]) {
     // insert code here...
-    std::cout << "Hello, World!\n";
+    
+    Matrix<double> m(3,3);
+    m.fill(2.0);
+    
+    m.operator<<(std::cout);
+    
     return 0;
 }
