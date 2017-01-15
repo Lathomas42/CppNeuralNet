@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D11E80701E2C017D0080D14D /* LinearAlgebraTools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D11E806E1E2C017D0080D14D /* LinearAlgebraTools.cpp */; };
 		D13B60651E2AAEED00A7F72D /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D13B60641E2AAEED00A7F72D /* main.cpp */; };
 		D13B606E1E2AAF9700A7F72D /* BaseNetwork.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D13B606C1E2AAF9700A7F72D /* BaseNetwork.cpp */; };
 		D13B60711E2ABF0E00A7F72D /* NetworkTools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D13B606F1E2ABF0E00A7F72D /* NetworkTools.cpp */; };
@@ -25,6 +26,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D11E806E1E2C017D0080D14D /* LinearAlgebraTools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LinearAlgebraTools.cpp; sourceTree = "<group>"; };
+		D11E806F1E2C017D0080D14D /* LinearAlgebraTools.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LinearAlgebraTools.hpp; sourceTree = "<group>"; };
 		D13B60611E2AAEED00A7F72D /* NeuralNet */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = NeuralNet; sourceTree = BUILT_PRODUCTS_DIR; };
 		D13B60641E2AAEED00A7F72D /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		D13B606C1E2AAF9700A7F72D /* BaseNetwork.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseNetwork.cpp; sourceTree = "<group>"; };
@@ -64,6 +67,8 @@
 			isa = PBXGroup;
 			children = (
 				D13B60641E2AAEED00A7F72D /* main.cpp */,
+				D11E806E1E2C017D0080D14D /* LinearAlgebraTools.cpp */,
+				D11E806F1E2C017D0080D14D /* LinearAlgebraTools.hpp */,
 				D13B606D1E2AAF9700A7F72D /* BaseNetwork.hpp */,
 				D13B606F1E2ABF0E00A7F72D /* NetworkTools.cpp */,
 				D13B60701E2ABF0E00A7F72D /* NetworkTools.hpp */,
@@ -130,6 +135,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D13B60651E2AAEED00A7F72D /* main.cpp in Sources */,
+				D11E80701E2C017D0080D14D /* LinearAlgebraTools.cpp in Sources */,
 				D13B60711E2ABF0E00A7F72D /* NetworkTools.cpp in Sources */,
 				D13B606E1E2AAF9700A7F72D /* BaseNetwork.cpp in Sources */,
 			);
@@ -258,6 +264,7 @@
 				D13B606A1E2AAEED00A7F72D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
