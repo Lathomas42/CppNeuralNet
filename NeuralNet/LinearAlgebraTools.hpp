@@ -13,6 +13,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <random>
 // this is a debug flag
 #define DBG
 
@@ -41,12 +42,18 @@ public:
     size_t getRows() const;
     size_t getCols() const;
     void fill( valType val );
+    void fillRandom( valType valMin, valType valMax );
     
     // element
     valType& operator()(size_t i, size_t j);
     valType operator()(size_t i, size_t j) const;
     valType getMultVal( const Matrix<valType>& rhs, size_t i, size_t j);
     
+    // row and column vector getters and setters
+    Matrix<valType> getRow( size_t i );
+    Matrix<valType> getColumn( size_t j );
+    void setRow( size_t i, const Matrix<valType>& row );
+    void setColumn( size_t j, const Matrix<valType>& column );
     /*-------------------------------------------
      * Assigment operators
      */
@@ -85,6 +92,8 @@ public:
     Matrix<valType> horzcat( const Matrix<valType>& rhs);
     // Vertical Concatenation
     Matrix<valType> vertcat( const Matrix<valType>& rhs);
+    // Apply a function to the whole matrix and return it as a new matrix
+    Matrix<valType> applyFunction( std::function<double (double)> f);
     // print operator
     std::ostream& operator<< (std::ostream & out);
 private:

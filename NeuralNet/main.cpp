@@ -7,7 +7,13 @@
 //
 
 #include <iostream>
+#include <cmath>
+#include <functional>
 #include "LinearAlgebraTools.hpp"
+
+double exampleFunc( double x){
+    return std::sqrt(x);
+}
 
 int main(int argc, const char * argv[]) {
     // insert code here...
@@ -16,7 +22,7 @@ int main(int argc, const char * argv[]) {
     m2.fill(2.0);
     std::cout<<"m2"<<std::endl;
     m2.operator<<(std::cout);
-    
+
     Matrix<double> mI(3,3);
     mI.fill(0.0);
     mI(0,0) = 1.0;
@@ -56,7 +62,13 @@ int main(int argc, const char * argv[]) {
     m3 = m2 - mI;
     m3.operator<<(std::cout);
 
-
+    std::cout<<"take the square root"<<std::endl;
+    m3 = m3.applyFunction(exampleFunc);
+    m3.operator<<(std::cout);
+    
+    std::cout<<"Fill with random between -4 and 4"<<std::endl;
+    m3.fillRandom(-4.0, 4.0);
+    m3.operator<<(std::cout);
     
     return 0;
 }

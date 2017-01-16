@@ -22,6 +22,7 @@ rows(nRows),
 columns(nCol),
 data(nRows*nCol)
 {
+    srand((unsigned)time(0));
 }
 
 // copy constructor
@@ -32,6 +33,7 @@ rows(T.getRows()),
 columns(T.getCols()),
 data(T.getRows()*T.getCols())
 {
+    srand((unsigned)time(0));
     for( int i = 0; i < rows; i++){
         for( int j = 0; j < columns; j++){
             operator()(i,j) = T(i,j);
@@ -77,6 +79,22 @@ void Matrix<valType>::fill( valType val ){
     std::fill(data.begin(),data.end(),val);
 }
 
+template<typename valType>
+void Matrix<valType>::fillRandom( valType valMin, valType valMax ){
+#ifdef DBG
+    assert( valMax > valMin);
+#endif
+    for( int i = 0; i < getRows(); i++){
+        for( int j = 0; j < getCols(); j++){
+            double r = rand();
+            double r01 = r / RAND_MAX;
+            valType x = r01*(valMax - valMin) + valMin;
+            operator()(i,j) = x;
+        }
+    }
+}
+
+
 // element
 template<typename valType>
 valType& Matrix<valType>::operator()(size_t i, size_t j){
@@ -104,6 +122,51 @@ valType Matrix<valType>::getMultVal( const Matrix<valType>& rhs, size_t i, size_
         sum += operator()(i,ind) * rhs(ind,j);
     }
     return sum;
+}
+
+// row and column vector getters and setters
+template<typename valType>
+Matrix<valType> Matrix<valType>::getRow( size_t i ){
+#ifdef DBG
+    assert(i<getRows());
+#endif
+    Matrix<valType> row(1,getCols());
+    for( int j = 0; j < getCols(); j++){
+        row(0,j) = operator()(i,j);
+    }
+    return row;
+}
+
+template<typename valType>
+Matrix<valType> Matrix<valType>::getColumn( size_t j ){
+#ifdef DBG
+    assert(j<getCols());
+#endif
+    Matrix<valType> col(getRows(),1);
+    for( int i = 0; i < getRows(); i++){
+        col(i,0) = operator()(i,j);
+    }
+    return col;
+}
+
+template<typename valType>
+void Matrix<valType>::setRow( size_t i, const Matrix<valType>& row ){
+#ifdef DBG
+    assert(row.getCols() == getCols() && row.getRows() == 1 && i < getRows());
+#endif
+    for( int j = 0; j < getCols(); j++){
+        operator()(i,j) = row(0,j);
+    }
+}
+
+template<typename valType>
+void Matrix<valType>::setColumn( size_t j, const Matrix<valType>& column ){
+#ifdef DBG
+    assert(column.getRows() == getRows() && column.getCols() == 1 && j < getCols());
+#endif
+    for( int i = 0; i < getRows(); i++){
+        operator()(i,j) = column(i,0);
+    }
 }
 
 /*-------------------------------------------
@@ -363,13 +426,24 @@ Matrix<valType> Matrix<valType>::vertcat( const Matrix<valType>& rhs){
     }
     return new_matrix;
 }
+// Apply a function to the whole matrix and return it as a new matrix
+template<typename valType>
+Matrix<valType> Matrix<valType>::applyFunction( std::function<double (double)> f){
+    Matrix<valType> new_matrix(getRows(), getCols());
+    for( int i = 0; i < getRows(); i++){
+        for( int j = 0; j < getCols(); j++){
+            new_matrix(i,j) = f(operator()(i,j));
+        }
+    }
+    return new_matrix;
+}
 
 // print operator
 template<typename valType>
 std::ostream& Matrix<valType>::operator<< (std::ostream & out) {
     for( int i = 0; i < rows; i++){
         for( int j = 0; j < columns; j++){
-            out<<operator()(i,j);
+            out<<operator()(i,j)<<" ";
         }
         out<<std::endl;
     }
