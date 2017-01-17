@@ -437,7 +437,14 @@ Matrix<valType> Matrix<valType>::applyFunction( std::function<double (double)> f
     }
     return new_matrix;
 }
-
+template<typename valType>
+valType Matrix<valType>::sumMatrix(){
+    valType sum(0.0);
+    for( auto i : data){
+        sum += i;
+    }
+    return sum;
+}
 // print operator
 template<typename valType>
 std::ostream& Matrix<valType>::operator<< (std::ostream & out) {

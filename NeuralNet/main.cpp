@@ -70,5 +70,8 @@ int main(int argc, const char * argv[]) {
     m3.fillRandom(-4.0, 4.0);
     m3.operator<<(std::cout);
     
+    std::cout<<"Sum of m3"<<std::endl;
+    std::cout<<m3.sumMatrix()<<std::endl;
+    
     return 0;
 }

@@ -69,9 +69,9 @@
 				D13B60641E2AAEED00A7F72D /* main.cpp */,
 				D11E806E1E2C017D0080D14D /* LinearAlgebraTools.cpp */,
 				D11E806F1E2C017D0080D14D /* LinearAlgebraTools.hpp */,
-				D13B606D1E2AAF9700A7F72D /* BaseNetwork.hpp */,
 				D13B606F1E2ABF0E00A7F72D /* NetworkTools.cpp */,
 				D13B60701E2ABF0E00A7F72D /* NetworkTools.hpp */,
+				D13B606D1E2AAF9700A7F72D /* BaseNetwork.hpp */,
 				D13B606C1E2AAF9700A7F72D /* BaseNetwork.cpp */,
 			);
 			path = NeuralNet;

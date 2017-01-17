@@ -10,9 +10,11 @@
 #define NetworkTools_hpp
 
 #include <stdio.h>
-
+#include "LinearAlgebraTools.hpp"
 
 #include <vector>
+#include <functional>
+#include <cmath>
 #include <cstdlib>
 #include <iostream>
 #include <ctime>

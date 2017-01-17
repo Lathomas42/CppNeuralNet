@@ -80,20 +80,26 @@ public:
     /* ------------------------------------------
      * Matrix Operators that produce a new matrix of the same size
      */
-    Matrix<valType> operator+(const Matrix<valType>& rhs);
-    Matrix<valType> operator-(const Matrix<valType>& rhs);
+    Matrix<valType> operator+(const Matrix<valType>& rhs) const;
+    Matrix<valType> operator-(const Matrix<valType>& rhs) const;
     // Matrix Multiplication types
-    Matrix<valType> operator*( const Matrix<valType>& rhs);
-    Matrix<valType> hadmardMult( const Matrix<valType>& rhs);
-    Matrix<valType> kroneckerMult( const Matrix<valType>& rhs );
+    Matrix<valType> operator*( const Matrix<valType>& rhs) const;
+    Matrix<valType> hadmardMult( const Matrix<valType>& rhs) const;
+    Matrix<valType> kroneckerMult( const Matrix<valType>& rhs ) const;
     // Transpose
-    Matrix<valType> T();
+    Matrix<valType> T() const;
     // Matrix Concatenation
-    Matrix<valType> horzcat( const Matrix<valType>& rhs);
+    Matrix<valType> horzcat( const Matrix<valType>& rhs) const;
     // Vertical Concatenation
-    Matrix<valType> vertcat( const Matrix<valType>& rhs);
+    Matrix<valType> vertcat( const Matrix<valType>& rhs) const;
     // Apply a function to the whole matrix and return it as a new matrix
-    Matrix<valType> applyFunction( std::function<double (double)> f);
+    Matrix<valType> applyFunction( std::function<double (double)> f) const;
+    enum Direction{
+        kAll = 0,
+        kRows = 1,
+        kColumns = 2
+    };
+    valType sumMatrix();
     // print operator
     std::ostream& operator<< (std::ostream & out);
 private:
