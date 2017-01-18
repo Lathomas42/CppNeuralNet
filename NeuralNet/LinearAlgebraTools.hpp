@@ -62,6 +62,16 @@ public:
     Matrix<valType>& operator/=(const valType& val);
     Matrix<valType>& operator-=(const valType& val);
     
+    template<typename t>
+    // copy operator for matrices of different types
+    Matrix<valType>& operator=(const Matrix<t>& rhs){
+        setSize(rhs.getRows(),rhs.getCols());
+        for( int i = 0; i < rows; i++){
+            for( int j = 0; j < columns; j++){
+                operator()(i,j) = t(rhs(i,j));
+            }
+        }
+    };
     /* ------------------------------------------
      * Operations that produce a new matrix
      */
