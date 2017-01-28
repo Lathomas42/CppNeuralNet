@@ -17,14 +17,10 @@ class BaseClassifier{
   /// This funciton takes in
   /// input: N x D where D is the dims of valType.
   /// note valType can me Matrix<double> or anything else
-  virtual void train(std::vector<valType> input, std::vector<int> output) = 0;
+  virtual void train(std::vector<inValType> input, std::vector<int> output) = 0;
   /// This function takes in an input dataset and outputs the classifications
-  virtual std::vector<int> predict(std::vector<valType> intput) = 0;
+  virtual std::vector<int> predict(std::vector<inValType> intput) = 0;
 
-}
-
-class NearestNeighbor{
-
-}
+};
 
 #endif /*BaseClassifier.hpp*/

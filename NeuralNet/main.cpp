@@ -10,6 +10,7 @@
 #include <cmath>
 #include <functional>
 #include "LinearAlgebraTools.hpp"
+#include "NearestNeighbor.hpp"
 
 double exampleFunc( double x){
     return std::sqrt(x);
@@ -17,7 +18,7 @@ double exampleFunc( double x){
 
 int main(int argc, const char * argv[]) {
     // insert code here...
-    
+
     Matrix<double> m2(3,3);
     m2.fill(2.0);
     std::cout<<"m2"<<std::endl;
@@ -30,34 +31,34 @@ int main(int argc, const char * argv[]) {
     mI(2,2) = 2.0;
     std::cout<<"mI"<<std::endl;
     mI.operator<<(std::cout);
-    
+
 
     std::cout<<"Normal Mult"<<std::endl;
     Matrix<double> m3 = m2 * mI;
     m3.operator<<(std::cout);
-    
+
 
     std::cout<<"Hadmard Mult"<<std::endl;
     m3 = m2.hadmardMult(mI);
     m3.operator<<(std::cout);
-    
+
     std::cout<<"Kronker Mult"<<std::endl;
     m3 = m2.kroneckerMult(mI);
     m3.operator<<(std::cout);
 
-    
+
     std::cout<<"HorzCat"<<std::endl;
     m3 = m2.horzcat(mI);
     m3.operator<<(std::cout);
-    
+
     std::cout<<"vertCat"<<std::endl;
     m3 = m2.vertcat(mI);
     m3.operator<<(std::cout);
-    
+
     std::cout<<"Add"<<std::endl;
     m3 = m2 + mI;
     m3.operator<<(std::cout);
-    
+
     std::cout<<"Sub"<<std::endl;
     m3 = m2 - mI;
     m3.operator<<(std::cout);
@@ -65,13 +66,13 @@ int main(int argc, const char * argv[]) {
     std::cout<<"take the square root"<<std::endl;
     m3 = m3.applyFunction(exampleFunc);
     m3.operator<<(std::cout);
-    
+
     std::cout<<"Fill with random between -4 and 4"<<std::endl;
     m3.fillRandom(-4.0, 4.0);
     m3.operator<<(std::cout);
-    
+
     std::cout<<"Sum of m3"<<std::endl;
     std::cout<<m3.sumMatrix()<<std::endl;
-    
+
     return 0;
 }
