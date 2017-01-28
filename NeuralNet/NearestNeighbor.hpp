@@ -12,6 +12,8 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <valarray>
+#include <vector>
 #include "BaseClassifier.hpp"
 #include "LinearAlgebraTools.hpp"
 
@@ -123,16 +125,40 @@ private:
 // different type of NearestNeighbor, impliment your own getDistance function
 template<>
 float NearestNeighbor<Matrix<int>>::getDistance( Matrix<int> in, Matrix<int> pred){
-  // L1
   in -= pred;
+  //L1
   in = in.applyFunction([](double x){return std::abs(x);});
-  return in.sumMatrix();
   //L2
-  /*
-  in -= pred;
-  in = in.applyFunction([](int x){return x*x;});
+  //in = in.applyFunction([](int x){return x*x;});
   return in.sumMatrix();
+}
+
+template<>
+float NearestNeighbor<std::vector<int>>::getDistance( std::vector<int> in, std::vector<int> pred ){
+  assert(in.size() == pred.size());
+  float sum = 0.0f;
+  for( int i = 0; i < in.size(); i++){
+    //L1
+    in[i] = std::abs(in[i] - pred[i]);
+    //L2
+    //int val = in[i] - pred[i];
+    //in[i] = val * val;
+    sum += in[i];
+  }
+  return sum;
+}
+
+template<>
+float NearestNeighbor<std::valarray<int>>::getDistance( std::valarray<int> in, std::valarray<int> pred ){
+  in -= pred;
+  // L1
+  in = std::abs(in);
+  // L2
+  /*
+  in = in * in;
   */
+  return in.sum();
+
 }
 
 #endif /*NearestNeighbor.hpp*/
