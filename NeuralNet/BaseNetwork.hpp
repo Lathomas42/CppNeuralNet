@@ -81,10 +81,10 @@ class BaseNetwork{
     }
     
     // Applys the Activation Function to a matrix
-    Matrix<double> applyActivationFunction( const Matrix<double>& x){
+    Matrix<int> applyActivationFunction( const Matrix<double>& x){
         // make a new matrix that is a copy of the input matrix
-        Matrix<double> y(x.getRows(),x.getCols());
-        y = x.applyFunction([](double x){return (std::tanh(x) + 1.0) / 2.0;});
+        Matrix<int> y(x.getRows(),x.getCols());
+        y = x.applyFunction([](double x){return (std::tanh(x) + 1.0) / 2.0 > .5 ? 1 : 0;});
         return y;
     }
     // apply deriv of function above
@@ -94,6 +94,53 @@ class BaseNetwork{
         return y;
     }
     
+    struct FeedforwardOutput{
+        Matrix<double> net;
+        Matrix<int> output;
+    };
+    
+    FeedforwardOutput feedForward( const Matrix<double>& input){
+        FeedforwardOutput out;
+        out.net = weights*input.horzcat(bias);
+        // applying the activation function gives us the outputs
+        // 0s or 1s
+        out.output = applyActivationFunction( out.net ) ;
+        return out;
+    }
+    
+
+    void errorEval( const Matrix<double>& input){
+        FeedforwardOutput out = feedForward(input);
+        double tmpErr = (targetOuput - out.output).applyFunction([](int x){return x*x;}).sumMatrix();
+        // not sure here should be input count * output count
+        tmpErr /= (input.getRows() * numClasses);
+        Matrix<int> classes = computeClasses(out.output);
+        size_t nRows = classes.getRows();
+        double tmpClassErr = 0;
+        for( size_t i = 0; i < nRows; i++){
+            if( classes(i,0) != targetClass(i,0)){
+                tmpClassErr++;
+            }
+        }
+        tmpClassErr/=nRows;
+        // set the networks current error
+        currentError = tmpErr;
+        currentClassError = tmpClassErr;
+        
+    }
+    
+    void backPropagate( double learningRate ){
+        // updates the weights according to the errors
+    }
+    
+    void tran( const Matrix<double>& trainingSet, int numLimit = -1){
+        // if numLimit is -1 then do not limit, else, only do that many samples
+    }
+    
+    
+    void InitWeights( double minWeight, double maxWeight ){
+        weights.fillRandom(minWeight, maxWeight);
+    }
     
   //  Matrix<double> inputs;
     // dynamic weights
@@ -101,8 +148,11 @@ class BaseNetwork{
     // column of 1s
     Matrix<double> bias;
    // Matrix<double> outputs;
-    Matrix<double> targetOuput;
-    Matrix<double> targetClass;
+    Matrix<int> targetOuput;
+    Matrix<int> targetClass;
+    
+    double currentError;
+    double currentClassError;
     int numClasses;
 };
 

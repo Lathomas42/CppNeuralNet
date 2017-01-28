@@ -73,6 +73,17 @@ public:
       return *this;
   }
 
+  template<typename t>
+  // copy operator for matrices of different types
+  Matrix<valType>& operator=(const Matrix<t>& rhs){
+      setSize(rhs.getRows(),rhs.getCols());
+      for( int i = 0; i < rows; i++){
+          for( int j = 0; j < columns; j++){
+              operator()(i,j) = t(rhs(i,j));
+          }
+      }
+  };
+
   /* --------------------------------------------------------
    * Basic Getters and Setters
    *
@@ -476,6 +487,7 @@ public:
       }
       return out;
   }
+
     enum Direction{
         kAll = 0,
         kRows = 1,
