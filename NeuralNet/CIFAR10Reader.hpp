@@ -10,7 +10,8 @@ struct CIFAR10Image{
   std::valarray<int> pixelValues;
 };
 
-
+// download the CIFAR10 binary files from https://www.cs.toronto.edu/~kriz/cifar.html
+// and put the relative path here
 #define CIFAR10_DIRECTORY "../../cifar-10-batches-bin/"
 // nFiles -1 will read all available files
 static std::vector<CIFAR10Image> readCIFAR10File( std::string fname, int nFiles = -1 ){
