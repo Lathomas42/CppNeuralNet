@@ -5,13 +5,14 @@
 //  Created by Logan Thomas on 1/14/17.
 //  Copyright © 2017 Logan Thomas. All rights reserved.
 //
-
+#include <fstream>
+#include <valarray>
 #include <iostream>
 #include <cmath>
 #include <functional>
 #include "LinearAlgebraTools.hpp"
 #include "NearestNeighbor.hpp"
-
+#include "CIFAR10Reader.hpp"
 double exampleFunc( double x){
     return std::sqrt(x);
 }
@@ -74,5 +75,12 @@ int main(int argc, const char * argv[]) {
     std::cout<<"Sum of m3"<<std::endl;
     std::cout<<m3.sumMatrix()<<std::endl;
 
+    std::string A = "../../cifar-10-batches-bin/test_batch.bin";
+    std::vector<CIFAR10Image> imgs = readCIFAR10File("test_batch.bin",1);
+
+    std::cout<<imgs.size()<<std::endl;
+    std::cout<<(int) imgs[0].classification<<std::endl;
+    for( int i = 0; i < imgs[0].pixelValues.size(); i++)
+      std::cout<<(int) imgs[0].pixelValues[i]<<std::endl;
     return 0;
 }

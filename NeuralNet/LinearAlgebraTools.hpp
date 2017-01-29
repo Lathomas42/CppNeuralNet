@@ -24,6 +24,7 @@
 /* Matrix class
  *
  * This is a basic resizable matrix class that will come in handy in Neural Networks
+ * Probably better to use opencv matrix but this will do for local things
  */
 template< typename valType>
 class Matrix{
