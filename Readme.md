@@ -4,6 +4,7 @@
 This repository is just beginning so excuse any messy code or projects.
 
 Goals
+- Super Basic kNearestNeighbor classifier
 - Basic, easy to use neural network
 - Impliment different types of networks:
 - add multilayer functionality
