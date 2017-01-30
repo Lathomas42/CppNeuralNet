@@ -1,4 +1,4 @@
-// Some helper functions to read CIFAR10 to valarrays or matrices
+// Some helper functions to read CIFAR10 to vectors or matrices
 
 #include <vector>
 #include <fstream>
@@ -82,22 +82,24 @@ public:
   int nFPI;
   std::ifstream cifarBinaries;
 
-  CIFAR10ImageSet nextSet(){
+  void nextSet(CIFAR10ImageSet& bufset){
     char buffer[3073];
-    std::valarray<int> tmpVA(3072);
 
-    CIFAR10ImageSet imgs;
+
+    bufset.vClassifications.clear();
+    bufset.vPixelVals.clear();
     int nFiles = nFPI;
     while( cifarBinaries.read(buffer,3073) && nFiles != 0){
+      std::valarray<int> tmpVA(3072);
       // buffer is full of 3073 bytes, lets turn that into a CIFAR10Image
       for( int i = 0; i < 3072; i++){
         tmpVA[i] = static_cast<uint8_t>(buffer[i+1]);
       }
       nFiles--;
-      imgs.vClassifications.push_back(static_cast<uint8_t>(buffer[0]));
-      imgs.vPixelVals.push_back(tmpVA);
+      bufset.vClassifications.push_back(static_cast<uint8_t>(buffer[0]));
+      bufset.vPixelVals.push_back(tmpVA);
       readPos += 3073;
     }
-    return imgs;
+
   }
 };

@@ -34,20 +34,19 @@ public:
   /// input k querys the k nearest neighbors and returns the most common
   virtual std::vector<int> predict(const std::vector<dataType>& input) override{
     int n_test = input.size();
+    int n_trained = trainingInput.size();
     std::vector<int> yPredictions(n_test);
 
     for( int i = 0; i < n_test; i++){
-      std::cout<<"PREDICTING "<<i<<std::endl;
-      std::vector<float> distances(trainingInput.size());
+      //std::cout<<"PREDICTING "<<i<<std::endl;
       // Iter through ALL the training input... this is why this method is slow
       // and undesirable
       // also find the k closest input elements as we are going through
       std::vector<std::pair<int,float>> vIndDists;
-      std::pair<int,float> curMaxIndDist;
-      for( int j = 0; j < trainingInput.size(); j++){
+      std::pair<int,float> curMaxIndDist {0,0.0f};
+      for( int j = 0; j < n_trained; j++){
         // get Distance (user defined metric) to this training data point
         float dist = getDistance(input[i],trainingInput[j]);
-        distances[j] = dist;
         // if the vector of mins is empty, add this reguardless
         if( vIndDists.size() < kNeighbor ){
           vIndDists.emplace_back(j,dist);
@@ -57,7 +56,11 @@ public:
         }
         else{
           if( curMaxIndDist.second > dist){
-            int indMax = curMaxIndDist.first;
+            int indMax = -1;
+            for( size_t indD = 0; indD < vIndDists.size(); indD++){
+              if( vIndDists[indD].first == curMaxIndDist.first)
+                indMax = indD;
+            }
             vIndDists[indMax].first = j;
             vIndDists[indMax].second = dist;
             // invalidate Max
@@ -67,9 +70,11 @@ public:
         }
         // recalc the max if we added any items
         if( curMaxIndDist.first == -1){
-          for( auto pIndDist : vIndDists ){
-            if( pIndDist.second > curMaxIndDist.second )
-              curMaxIndDist = pIndDist;
+          for( size_t indD = 0; indD < vIndDists.size(); indD++ ){
+            if( vIndDists[indD].second > curMaxIndDist.second ){
+              curMaxIndDist.first = vIndDists[indD].first;
+              curMaxIndDist.second = vIndDists[indD].second;
+            }
           }
         }
       }
@@ -77,14 +82,12 @@ public:
         yPredictions[i] = trainingOutput[vIndDists[0].first];
       else{
         std::vector<int> predictions, modePredictions;
-        std::cout<<"A"<<std::endl;
         // now we have a vector of the k closest elements.
         // lets see what those elements had as labels
         predictions.clear();
         modePredictions.clear();
-        std::cout<<"Cleared"<<std::endl;
-        for ( auto pIndDist : vIndDists ){
-          predictions.push_back(trainingOutput[pIndDist.first]);
+        for ( size_t indD = 0; indD < vIndDists.size(); indD++  ){
+          predictions.push_back(trainingOutput[vIndDists[indD].first]);
         }
 
         std::sort(predictions.begin(), predictions.end());
@@ -117,12 +120,10 @@ public:
         if( modePredictions.size() == 1 )
           yPredictions[i] = modePredictions[0];
         else{
-          std::cout<<"A TIE"<<std::endl;
           yPredictions[i] = modePredictions[std::rand() % modePredictions.size()];
         }
       }
     }
-    std::cout<<"B"<<std::endl;
     return yPredictions;
   };
 

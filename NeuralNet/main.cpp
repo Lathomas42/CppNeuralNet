@@ -6,7 +6,8 @@
 //  Copyright © 2017 Logan Thomas. All rights reserved.
 //
 #include <fstream>
-#include <valarray>
+#include <vector>
+#include <array>
 #include <iostream>
 #include <cmath>
 #include <functional>
@@ -16,6 +17,8 @@
 double exampleFunc( double x){
     return std::sqrt(x);
 }
+
+#define TEST_KNN
 
 int main(int argc, const char * argv[]) {
     // insert code here...
@@ -75,6 +78,7 @@ int main(int argc, const char * argv[]) {
     std::cout<<"Sum of m3"<<std::endl;
     std::cout<<m3.sumMatrix()<<std::endl;
 #endif
+#ifdef TEST_KNN
     NearestNeighbor<std::valarray<int>> knn(1);
 
     {
@@ -83,29 +87,32 @@ int main(int argc, const char * argv[]) {
 
       knn.train(trainImages.vPixelVals, trainImages.vClassifications);
     }
-    CIFAR10ImageSetIterator imgIter("test_batch.bin",100,10);
-    bool done = false;
-    int nC = 0;
-    int nT = 0;
-    while (!done){
-      CIFAR10ImageSet testImages = imgIter.nextSet();
-      std::cout<<"NEXTSET SIZE"<<testImages.size()<<std::endl;
-      if( testImages.size() != 0){
-        std::cout<<"Using Test est of: "<<testImages.vClassifications.size()<<std::endl;
-
-        std::vector<int> predicted = knn.predict(testImages.vPixelVals);
-        std::cout<<"DONE"<<std::endl;
-        for( int i = 0; i < testImages.size(); i++){
-          nT++;
-          if( predicted[i] == testImages.vClassifications[i])
-            nC++;
+    CIFAR10ImageSetIterator imgIter("test_batch.bin",100,100);
+    std::array<int,4> kValues = {1,5,10,20};
+    for( auto k : kValues ){
+      knn.kNeighbor = k;
+      bool done = false;
+      int nC = 0;
+      int nT = 0;
+      CIFAR10ImageSet testBuffer;
+      while (!done && nT < 3000){
+        // get the next set of images
+        imgIter.nextSet(testBuffer);
+        if( testBuffer.size() != 0){
+          // predict using the kNearestNeighbor
+          std::vector<int> predicted(knn.predict(testBuffer.vPixelVals));
+          for( int i = 0; i < testBuffer.size(); i++){
+            nT++;
+            if( predicted[i] == testBuffer.vClassifications[i])
+              nC++;
+          }
         }
-        std::cout<<"Next"<<std::endl;
+        else{
+          done = true;
+        }
       }
-      else
-        done = true;
+      std::cout<<"% Correct at k Val of "<<k<<": "<<((float) nC)/nT<<std::endl;
     }
-    std::cout<<"% Correct: "<<((float) nC)/nT<<std::endl;
-
+#endif
     return 0;
 }
