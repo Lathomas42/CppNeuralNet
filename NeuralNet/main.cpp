@@ -19,7 +19,7 @@ double exampleFunc( double x){
 
 int main(int argc, const char * argv[]) {
     // insert code here...
-
+#ifdef TEST_MATRICES
     Matrix<double> m2(3,3);
     m2.fill(2.0);
     std::cout<<"m2"<<std::endl;
@@ -74,13 +74,38 @@ int main(int argc, const char * argv[]) {
 
     std::cout<<"Sum of m3"<<std::endl;
     std::cout<<m3.sumMatrix()<<std::endl;
+#endif
+    NearestNeighbor<std::valarray<int>> knn(1);
 
-    std::string A = "../../cifar-10-batches-bin/test_batch.bin";
-    std::vector<CIFAR10Image> imgs = readCIFAR10File("test_batch.bin",1);
+    {
+      CIFAR10ImageSet trainImages = readCIFAR10File("test_batch.bin",100);
+      std::cout<<"Using Training set of: "<< trainImages.vClassifications.size()<<std::endl;
 
-    std::cout<<imgs.size()<<std::endl;
-    std::cout<<(int) imgs[0].classification<<std::endl;
-    for( int i = 0; i < imgs[0].pixelValues.size(); i++)
-      std::cout<<(int) imgs[0].pixelValues[i]<<std::endl;
+      knn.train(trainImages.vPixelVals, trainImages.vClassifications);
+    }
+    CIFAR10ImageSetIterator imgIter("test_batch.bin",100,10);
+    bool done = false;
+    int nC = 0;
+    int nT = 0;
+    while (!done){
+      CIFAR10ImageSet testImages = imgIter.nextSet();
+      std::cout<<"NEXTSET SIZE"<<testImages.size()<<std::endl;
+      if( testImages.size() != 0){
+        std::cout<<"Using Test est of: "<<testImages.vClassifications.size()<<std::endl;
+
+        std::vector<int> predicted = knn.predict(testImages.vPixelVals);
+        std::cout<<"DONE"<<std::endl;
+        for( int i = 0; i < testImages.size(); i++){
+          nT++;
+          if( predicted[i] == testImages.vClassifications[i])
+            nC++;
+        }
+        std::cout<<"Next"<<std::endl;
+      }
+      else
+        done = true;
+    }
+    std::cout<<"% Correct: "<<((float) nC)/nT<<std::endl;
+
     return 0;
 }
