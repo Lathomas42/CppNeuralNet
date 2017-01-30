@@ -58,8 +58,10 @@ public:
           if( curMaxIndDist.second > dist){
             int indMax = -1;
             for( size_t indD = 0; indD < vIndDists.size(); indD++){
-              if( vIndDists[indD].first == curMaxIndDist.first)
+              if( vIndDists[indD].first == curMaxIndDist.first){
                 indMax = indD;
+                break;
+              }
             }
             vIndDists[indMax].first = j;
             vIndDists[indMax].second = dist;
@@ -108,7 +110,9 @@ public:
             modePredictions.push_back(predictions[iPred]);
             nModeCount = nCount;
           }
+          prevPred = predictions[iPred];
         }
+
         // now modePredictions contains the most common elements
         // most of the time this will be one item, but in the case
         // of multiple modes, multiple elements will be here
@@ -120,7 +124,8 @@ public:
         if( modePredictions.size() == 1 )
           yPredictions[i] = modePredictions[0];
         else{
-          yPredictions[i] = modePredictions[std::rand() % modePredictions.size()];
+          int randN = std::rand() % modePredictions.size();
+          yPredictions[i] = modePredictions[randN];
         }
       }
     }
@@ -167,12 +172,13 @@ float NearestNeighbor<std::vector<int>>::getDistance( std::vector<int> in, std::
 template<>
 float NearestNeighbor<std::valarray<int>>::getDistance( std::valarray<int> in, std::valarray<int> pred ){
   in -= pred;
+
   // L1
   //in = std::abs(in);
+
   // L2
   in *= in;
-
-  return in.sum();
+  return std::sqrt(in.sum());
 
 }
 

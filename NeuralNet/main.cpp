@@ -82,13 +82,13 @@ int main(int argc, const char * argv[]) {
     NearestNeighbor<std::valarray<int>> knn(1);
 
     {
-      CIFAR10ImageSet trainImages = readCIFAR10File("test_batch.bin",100);
+      CIFAR10ImageSet trainImages = readCIFAR10File("test_batch.bin",1000);
       std::cout<<"Using Training set of: "<< trainImages.vClassifications.size()<<std::endl;
 
       knn.train(trainImages.vPixelVals, trainImages.vClassifications);
     }
     CIFAR10ImageSetIterator imgIter("test_batch.bin",100,100);
-    std::array<int,4> kValues = {1,5,10,20};
+    std::array<int,6> kValues = {1,3,5,10,20,50};
     for( auto k : kValues ){
       knn.kNeighbor = k;
       bool done = false;
