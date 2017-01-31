@@ -11,6 +11,9 @@
 #include <iostream>
 #include <cmath>
 #include <functional>
+#include<thread>
+#include<future>
+#include <ctime>
 #include "LinearAlgebraTools.hpp"
 #include "NearestNeighbor.hpp"
 #include "CIFAR10Reader.hpp"
@@ -18,8 +21,8 @@ double exampleFunc( double x){
     return std::sqrt(x);
 }
 
+#define TEST_KNN_MULTITHREAD
 #define TEST_KNN
-
 int main(int argc, const char * argv[]) {
     // insert code here...
 #ifdef TEST_MATRICES
@@ -78,7 +81,11 @@ int main(int argc, const char * argv[]) {
     std::cout<<"Sum of m3"<<std::endl;
     std::cout<<m3.sumMatrix()<<std::endl;
 #endif
+    std::clock_t    start;
+
 #ifdef TEST_KNN
+{
+// this is an example of inline kNearestNeighbor use
     NearestNeighbor<std::valarray<int>> knn(1);
 
     {
@@ -87,15 +94,17 @@ int main(int argc, const char * argv[]) {
 
       knn.train(trainImages.vPixelVals, trainImages.vClassifications);
     }
-    CIFAR10ImageSetIterator imgIter("test_batch.bin",100,100);
-    std::array<int,6> kValues = {1,3,5,10,20,50};
+    std::cout<<"Synchronous"<<std::endl;
+    std::array<int,4> kValues = {1,3,5,10};
     for( auto k : kValues ){
+      auto t_start = std::chrono::high_resolution_clock::now();
+      CIFAR10ImageSetIterator imgIter("test_batch.bin",1000,500);
       knn.kNeighbor = k;
       bool done = false;
       int nC = 0;
       int nT = 0;
       CIFAR10ImageSet testBuffer;
-      while (!done && nT < 3000){
+      while (!done && nT < 8000){
         // get the next set of images
         imgIter.nextSet(testBuffer);
         if( testBuffer.size() != 0){
@@ -111,8 +120,70 @@ int main(int argc, const char * argv[]) {
           done = true;
         }
       }
+      auto t_end = std::chrono::high_resolution_clock::now();
+
+      std::cout<<" K VAL OF "<<k<<std::endl;
+      std::cout << "Wall clock time passed: "
+             << std::chrono::duration<double, std::milli>(t_end-t_start).count() <<std::endl;
       std::cout<<"% Correct at k Val of "<<k<<": "<<((float) nC)/nT<<std::endl;
     }
+  }
+#endif
+#ifdef TEST_KNN_MULTITHREAD
+
+{
+
+// this is an example of inline kNearestNeighbor use
+    NearestNeighbor<std::valarray<int>> knn(1);
+
+    {
+      CIFAR10ImageSet trainImages = readCIFAR10File("test_batch.bin",1000);
+      std::cout<<"Using Training set of: "<< trainImages.vClassifications.size()<<std::endl;
+
+      knn.train(trainImages.vPixelVals, trainImages.vClassifications);
+    }
+    std::cout<<"Asynchronous"<<std::endl;
+    std::array<int,4> kValues = {1,3,5,10};
+    for( auto k : kValues ){
+      auto t_start = std::chrono::high_resolution_clock::now();
+
+      CIFAR10ImageSetIterator imgIter("test_batch.bin",1000,500);
+      knn.kNeighbor = k;
+      bool done = false;
+      int nC = 0;
+      int nT = 0;
+
+      std::vector<std::future<std::vector<int>>>promises;
+      std::vector<std::vector<int>> vecOfClassifications;
+      while (!done && nT < 8000){
+        CIFAR10ImageSet testBuffer;
+        // get the next set of images
+        imgIter.nextSet(testBuffer);
+        if( testBuffer.size() != 0){
+          // predict using the kNearestNeighbor
+          promises.push_back(std::async( &NearestNeighbor<std::valarray<int>>::predict, &knn, testBuffer.vPixelVals));
+          nT += testBuffer.size();
+          vecOfClassifications.push_back(testBuffer.vClassifications);
+        }
+        else
+          done = true;
+      }
+      for( int i = 0; i < promises.size(); i++){
+        std::vector<int> pred = promises[i].get();
+        for( int j = 0; j < pred.size();j++){
+          if( pred[j] == vecOfClassifications[i][j] )
+            nC++;
+        }
+      }
+
+      auto t_end = std::chrono::high_resolution_clock::now();
+
+      std::cout<<" K VAL OF "<<k<<std::endl;
+      std::cout << "Wall clock time passed: "
+             << std::chrono::duration<double, std::milli>(t_end-t_start).count() <<std::endl;
+      std::cout<<"% Correct at k Val of "<<k<<": "<<((float) nC)/nT<<std::endl;
+    }
+  }
 #endif
     return 0;
 }
