@@ -17,6 +17,7 @@
 #include "LinearAlgebraTools.hpp"
 #include "NearestNeighbor.hpp"
 #include "CIFAR10Reader.hpp"
+#include "LinearClassifier.hpp"
 double exampleFunc( double x){
     return std::sqrt(x);
 }

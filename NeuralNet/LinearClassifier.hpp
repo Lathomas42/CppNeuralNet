@@ -27,20 +27,47 @@ Regulation penalty to discourage large weights
 #include "LinearAlgebraTools.hpp"
 #include <vector>
 
-class LinearClassifier: BaseClassifier<std::vector<float>>{
+class LinearClassifier: BaseClassifier<Matrix<float>>{
 public:
   LinearClassifier( int nClasses ){
+    delta = 1.0;
+  }
+
+  virtual void train(std::vector<Matrix<float>>& input, std::vector<int>& output) override{
 
   }
 
-  virtual void train(std::vector<std::vector<float>>& input, std::vector<int>& output) override{
-
+  virtual std::vector<int> predict(const std::vector<Matrix<float>>& intput) override{
+    return std::vector<int>(0);
   }
 
-  virtual std::vector<int> predict(const std::vector<std::vector<float>>& intput) override{
+  float LossFunction(const Matrix<float>& input, const int correctOutput){
+    /*
+    - input: a column vector representing one input (eg. an image)
+    - correctOutput: the correct classification
+    the loss function will return the loss for the set delta
+    */
+    assert(Weights.getCols() == input.getRows());
 
+    //                      N x D    D x 1
+    Matrix<float> scores = Weights * input;
+    // get the score for the correct Weight
+    float correctScore = scores(correctOutput,0);
+    float d = delta;
+    // now the loss function
+    scores = scores.applyFunction([correctScore,d](double s){return std::max<double>(0.0,s - correctScore + d);});
+    return scores.sumMatrix();
   }
+
+  // lambda is a hyperparameter we can optimize with cross validation
+  float RegulationPenalty( const float Lambda ){
+    Matrix<float> wSquared = Weights.applyFunction([](double x){return x*x;});
+    return wSquared.sumMatrix();
+  }
+
+
 private:
   Matrix<float> Weights; // N x D
   Matrix<float> bias; // 1 x N
-}
+  float delta;
+};
