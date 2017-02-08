@@ -126,6 +126,9 @@ public:
       }
   }
 
+  valType max(){
+    std::max(data.begin(), data.end());
+  }
 
   // element
 
