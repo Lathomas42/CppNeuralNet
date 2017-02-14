@@ -24,9 +24,9 @@ Problem with this method: the final loss matrix is not unique. there is no
 differentiating between W  and aW a>1. To differentiate these, we introduce a
 Regulation penalty to discourage large weights
 */
-#include "LinearClassifier.hpp"
 #include <vector>
-
+#include "BaseClassifier.hpp"
+#include "../Tools/LinearAlgebraTools.hpp"
 //#define SVM_LOSS
 
 #ifndef SVM_LOSS
@@ -47,7 +47,7 @@ public:
     return std::vector<int>(0);
   }
 
-  virtual float LossFunction(const Matrix<float>& input, const int correctOutput) override{
+  virtual float LossFunction(const Matrix<float>& input, const int correctOutput){
     /*
     - input: a column vector representing one input (eg. an image)
     - correctOutput: the correct classification
@@ -62,10 +62,9 @@ public:
     float d = delta;
     // now the loss function
 
-#ifndef SOFTMAX_LOSS
     scores = scores.applyFunction([correctScore,d](double s){return std::max<double>(0.0,s - correctScore + d);});
-    return scores.sumMatrix();
-#else
+
+#ifdef SOFTMAX_LOSS
     /*
       Softmax loss function provides a probability of the input being each of the
       possible outputs. SVM gives "Scores" which are tough to interpret as they
@@ -76,13 +75,14 @@ public:
     scores -= scores.max();
     scores = scores.applyFunction([](float s){return std::exp(s);});
     scores /= scores.sumMatrix();
-    return scores;
 
+    scores = scores.applyFunction([](float s){return -1.0f*std::log(s);});
 #endif
+    return scores.sumMatrix();
   }
 
   // lambda is a hyperparameter we can optimize with cross validation
-  virtual float RegulationPenalty( const float Lambda ) override{
+  virtual float RegulationPenalty( const float Lambda ){
     Matrix<float> wSquared = Weights.applyFunction([](double x){return x*x;});
     return wSquared.sumMatrix();
   }
