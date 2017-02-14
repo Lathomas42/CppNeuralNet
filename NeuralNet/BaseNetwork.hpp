@@ -10,7 +10,7 @@
 #define BaseNetwork_hpp
 
 #include <stdio.h>
-#include "LinearAlgebraTools.hpp"
+#include "Tools/LinearAlgebraTools.hpp"
 
 #include <vector>
 #include <functional>
@@ -26,13 +26,13 @@ class BaseNetwork{
     BaseNetwork(int nClasses):
         numClasses(nClasses)
     {
-        
+
     }
-    
+
     ~BaseNetwork(){
-        
+
     }
-    
+
     // Necessary function that maps to 0 1
     double activationFunc( double x ){
         return (std::tanh(x) + 1.0) / 2.0;
@@ -79,7 +79,7 @@ class BaseNetwork{
         }
         return output;
     }
-    
+
     // Applys the Activation Function to a matrix
     Matrix<int> applyActivationFunction( const Matrix<double>& x){
         // make a new matrix that is a copy of the input matrix
@@ -93,12 +93,12 @@ class BaseNetwork{
         y = x.applyFunction([](double x){double tx = std::tanh(x); return (1.0 - tx*tx)/2.0;});
         return y;
     }
-    
+
     struct FeedforwardOutput{
         Matrix<double> net;
         Matrix<int> output;
     };
-    
+
     FeedforwardOutput feedForward( const Matrix<double>& input){
         FeedforwardOutput out;
         out.net = weights*input.horzcat(bias);
@@ -107,7 +107,7 @@ class BaseNetwork{
         out.output = applyActivationFunction( out.net ) ;
         return out;
     }
-    
+
 
     void errorEval( const Matrix<double>& input){
         FeedforwardOutput out = feedForward(input);
@@ -126,22 +126,22 @@ class BaseNetwork{
         // set the networks current error
         currentError = tmpErr;
         currentClassError = tmpClassErr;
-        
+
     }
-    
+
     void backPropagate( double learningRate ){
         // updates the weights according to the errors
     }
-    
+
     void tran( const Matrix<double>& trainingSet, int numLimit = -1){
         // if numLimit is -1 then do not limit, else, only do that many samples
     }
-    
-    
+
+
     void InitWeights( double minWeight, double maxWeight ){
         weights.fillRandom(minWeight, maxWeight);
     }
-    
+
   //  Matrix<double> inputs;
     // dynamic weights
     Matrix<double> weights;
@@ -150,7 +150,7 @@ class BaseNetwork{
    // Matrix<double> outputs;
     Matrix<int> targetOuput;
     Matrix<int> targetClass;
-    
+
     double currentError;
     double currentClassError;
     int numClasses;

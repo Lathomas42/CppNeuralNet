@@ -14,10 +14,10 @@
 #include<thread>
 #include<future>
 #include <ctime>
-#include "LinearAlgebraTools.hpp"
-#include "NearestNeighbor.hpp"
-#include "CIFAR10Reader.hpp"
-#include "LinearClassifier.hpp"
+#include "Tools/LinearAlgebraTools.hpp"
+#include "Classifiers/NearestNeighbor.hpp"
+#include "Tools/CIFAR10Reader.hpp"
+#include "Classifiers/LinearClassifier.hpp"
 double exampleFunc( double x){
     return std::sqrt(x);
 }

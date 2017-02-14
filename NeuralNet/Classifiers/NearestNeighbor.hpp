@@ -15,7 +15,7 @@
 #include <valarray>
 #include <vector>
 #include "BaseClassifier.hpp"
-#include "LinearAlgebraTools.hpp"
+#include "../Tools/LinearAlgebraTools.hpp"
 
 template<typename dataType>
 class NearestNeighbor : public BaseClassifier<dataType>{

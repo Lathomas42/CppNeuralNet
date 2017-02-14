@@ -10,7 +10,7 @@
 #define NetworkTools_hpp
 
 #include <stdio.h>
-#include "LinearAlgebraTools.hpp"
+#include "Tools/LinearAlgebraTools.hpp"
 
 #include <vector>
 #include <functional>
@@ -40,9 +40,9 @@ public:
             weights[i] = r;
         }
     }
-    
+
     ~BaseNeuron(){}
-    
+
     // Basic Neuron functionality
     virtual classificationType feedForward(std::vector<double> inputs){
         double s = 0.0;
@@ -51,9 +51,9 @@ public:
         }
         return classify(s);
     }
-    
+
     virtual classificationType classify( double sum ) = 0;
-    
+
     std::vector<double> getWeights(){
         return weights;
     }
@@ -64,9 +64,9 @@ private:
 
 // Linear Neuron classifys based on +/- 1. Either above or below the line
 class LinearNeuron : public BaseNeuron<int>{
-    
+
     LinearNeuron(): BaseNeuron<int>(2){}
-    
+
     int classify(double sum) override{
         if( sum > 0 )
             return 1;
