@@ -22,8 +22,7 @@ double exampleFunc( double x){
     return std::sqrt(x);
 }
 
-#define TEST_KNN_MULTITHREAD
-#define TEST_KNN
+#define TEST_MATRICES
 int main(int argc, const char * argv[]) {
     // insert code here...
 #ifdef TEST_MATRICES
@@ -32,14 +31,19 @@ int main(int argc, const char * argv[]) {
     std::cout<<"m2"<<std::endl;
     m2.operator<<(std::cout);
 
-    Matrix<double> mI(3,3);
+    Matrix<double> mI(3,4);
     mI.fill(0.0);
     mI(0,0) = 1.0;
+    mI(1,0) = -1.0;
+    mI(0,1) = -2.0;
     mI(1,1) = 1.0;
     mI(2,2) = 2.0;
+    mI(2,3) = -4.0;
     std::cout<<"mI"<<std::endl;
     mI.operator<<(std::cout);
 
+    std::cout<<"mI.T()"<<std::endl;
+    mI.T().operator<<(std::cout);
 
     std::cout<<"Normal Mult"<<std::endl;
     Matrix<double> m3 = m2 * mI;

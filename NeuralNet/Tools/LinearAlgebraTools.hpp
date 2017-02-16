@@ -37,7 +37,7 @@ public:
   {}
 
 
-
+    // nxm matrix n height m width
   Matrix(size_t nRows, size_t nCol):
   rows(nRows),
   columns(nCol),
@@ -150,10 +150,10 @@ public:
 
   valType getMultVal( const Matrix<valType>& rhs, size_t i, size_t j){
   #ifdef DBG
-      assert(getCols() == rhs.getRows() && i < getCols() && j < rhs.getRows());
+      assert(getCols() == rhs.getRows() && i < getRows() && j < rhs.getCols());
   #endif
       valType sum(0);
-      for( size_t ind = 0; ind < rows; ind++){
+      for( size_t ind = 0; ind < columns; ind++){
           sum += operator()(i,ind) * rhs(ind,j);
       }
       return sum;
@@ -361,9 +361,10 @@ public:
   #ifdef DBG
       assert(rhs.getRows() == getCols());
   #endif
-      Matrix<valType> new_matrix(getCols(), rhs.getRows());
-      for( size_t i = 0; i < getCols(); i++){
-          for( size_t j = 0; j < rhs.getRows(); j++){
+      std::cout<<"SIZE"<<getRows()<<","<<rhs.getCols()<<std::endl;
+      Matrix<valType> new_matrix(getRows(), rhs.getCols());
+      for( size_t i = 0; i < getRows(); i++){
+          for( size_t j = 0; j < rhs.getCols(); j++){
               new_matrix(i,j) = getMultVal(rhs,i,j);
           }
       }
@@ -409,7 +410,7 @@ public:
   // Transpose
 
   Matrix<valType> T(){
-      Matrix<valType> new_matrix(getRows(), getCols());
+      Matrix<valType> new_matrix(getCols(), getRows());
       for( size_t i = 0; i < rows; i++){
           for( size_t j = 0; j < columns; j++){
               new_matrix(j,i) = operator()(i,j);
