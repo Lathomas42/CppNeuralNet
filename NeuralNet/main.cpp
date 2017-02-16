@@ -31,6 +31,9 @@ int main(int argc, const char * argv[]) {
     std::cout<<"m2"<<std::endl;
     m2.operator<<(std::cout);
 
+    std::cout<<"determinant"<<std::endl;
+    std::cout<<m2.determinant()<<std::endl;
+
     Matrix<double> mI(3,4);
     mI.fill(0.0);
     mI(0,0) = 1.0;

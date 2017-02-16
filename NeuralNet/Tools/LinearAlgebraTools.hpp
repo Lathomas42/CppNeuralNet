@@ -406,6 +406,40 @@ public:
       return kroneckerProduct;
   }
 
+  // Determinant of a matrix. suprisingly tricky
+  valType determinant(){
+    if( getCols() != getRows() ){
+#ifdef DBG
+      assert(false);
+#endif
+      return -1.0;
+    }
+
+    if( rows == 2 && columns == 2 )
+      return (operator()(0,0) * operator()(1,1) - operator()(1,0) * operator()(0,1));
+
+    Matrix<valType> submat( getRows() - 1, getCols() - 1);
+    int n = rows;
+    valType det = 0;
+    for( int iter = 0; iter < n; iter++){
+      int i2 = 0;
+      // skip first row
+      for( int i = 1; i < n; i++){
+        int j2 = 0;
+        for( int j = 0; j < n; j++){
+          // skip the iter column
+          if( j != iter ){
+            submat(i2,j2) = operator()(i,j);
+            j2++;
+          }
+        }
+        i2++;
+      }
+      det += std::pow(-1.0,iter)* operator()(0,iter) * submat.determinant();
+    }
+    return det;
+  }
+
 
   // Transpose
 
