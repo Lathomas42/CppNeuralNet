@@ -34,16 +34,20 @@ int main(int argc, const char * argv[]) {
     std::cout<<"determinant"<<std::endl;
     std::cout<<m2.determinant()<<std::endl;
 
-    Matrix<double> mI(3,4);
+    Matrix<double> mI(3,3);
     mI.fill(0.0);
     mI(0,0) = 1.0;
     mI(1,0) = -1.0;
     mI(0,1) = -2.0;
     mI(1,1) = 1.0;
-    mI(2,2) = 2.0;
-    mI(2,3) = -4.0;
+    mI(2,2) = 3.0;
     std::cout<<"mI"<<std::endl;
     mI.operator<<(std::cout);
+    std::cout<<"inv"<<std::endl;
+    auto b = mI.inverse();
+    b.operator<<(std::cout);
+    std::cout<<"mI"<<std::endl;
+    (mI*b).operator<<(std::cout);
 
     std::cout<<"mI.T()"<<std::endl;
     mI.T().operator<<(std::cout);

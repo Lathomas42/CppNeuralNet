@@ -46,6 +46,15 @@ public:
       srand((unsigned)time(0));
   }
 
+  static Matrix<valType> Identity(size_t n){
+    Matrix<valType> id(n,n);
+    id.fill(0.0);
+    for( int i = 0; i < n; i++){
+      id(i,i) = 1.0;
+    }
+    return id;
+  }
+
   // copy constructor
 
 
@@ -202,6 +211,13 @@ public:
       for( int i = 0; i < getRows(); i++){
           operator()(i,j) = column(i,0);
       }
+  }
+
+  void swapRows(int i, int j){
+    Matrix<valType> rowi = getRow(i);
+    Matrix<valType> rowj = getRow(j);
+    setRow(i,rowj);
+    setRow(j,rowj);
   }
 
   /*-------------------------------------------
@@ -361,7 +377,6 @@ public:
   #ifdef DBG
       assert(rhs.getRows() == getCols());
   #endif
-      std::cout<<"SIZE"<<getRows()<<","<<rhs.getCols()<<std::endl;
       Matrix<valType> new_matrix(getRows(), rhs.getCols());
       for( size_t i = 0; i < getRows(); i++){
           for( size_t j = 0; j < rhs.getCols(); j++){
@@ -438,6 +453,53 @@ public:
       det += std::pow(-1.0,iter)* operator()(0,iter) * submat.determinant();
     }
     return det;
+  }
+
+  // Matrix inversion. simple algorithm.
+  Matrix<valType> inverse(){
+    Matrix<valType> copyMat(*this);
+    Matrix<valType> inv = Identity(rows);
+    // cannot invert non square matrix or 0 determinant
+    if( rows != columns || determinant() == 0)
+      return inv;
+
+    // first go through and make sure there are values on each diagonal
+
+
+    for( int i = 0; i < rows; i++){
+      // first check if the diagonal element is zero
+      // if it is, swap it with the first nonzero row
+      if( copyMat(i,i) == 0.0 ){
+        for( int tmp = i; tmp < rows; tmp++){
+          if( i != tmp){
+            if( copyMat(i,tmp) != 0.0 ){
+              // swap the rows
+              copyMat.swapRows(i,tmp);
+              inv.swapRows(i,tmp);
+              // dont needa keep going
+              break;
+            }
+          }
+        }
+      }
+      assert(copyMat(i,i) != 0.0);
+      valType diagVal = copyMat(i,i);
+      // now that the diagonal is a number, divide everything in that row by that number
+      copyMat.setRow(i,copyMat.getRow(i)/diagVal);
+      inv.setRow(i,inv.getRow(i)/diagVal);
+
+      for( int j = 0; j < columns; j++){
+        // if you are not on the diagonal
+        if( i != j ){
+          // attempt to cancel your value out using row operations
+          valType jval = copyMat(j,i);
+          copyMat.setRow(j,copyMat.getRow(j) - copyMat.getRow(i)*jval);
+          inv.setRow(j,inv.getRow(j) - inv.getRow(i)*jval);
+        }
+      }
+    }
+    return inv;
+
   }
 
 
