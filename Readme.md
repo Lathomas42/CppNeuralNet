@@ -10,6 +10,17 @@ Goals
 - add multilayer functionality
 - attempt to impliment highway network functionality aswell
 
+
+TODO:
+- SVD
+- More linear algebra
+    - Linear dependence
+    - SVD
+    - Span
+    - Eigendecomp
+    - Psuedoinverse
+    - PCA
+
 Running list of refs:
 BackProp:
 https://page.mi.fu-berlin.de/rojas/neural/chapter/K7.pdf
